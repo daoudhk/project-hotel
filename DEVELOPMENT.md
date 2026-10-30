@@ -90,7 +90,7 @@ same behaviour (sliding along walls and furniture, no tunnelling thanks to sub-s
   muzzle flash, distance, movement speed, hiding and Concealment skill. Bots accumulate a detection meter over time
   (no instant spotting), shown above them as `?` (suspicious) and `!` (engaged).
 - Bot states: patrol, guard (protect hostages), assault (search for hostages), investigate, attack, cover, search,
-  rescue, escort. Bots react to gunshots, footsteps, impacts and teammate call-outs, notice dead teammates,
+  rescue, escort, scavenge. Bots react to gunshots, footsteps, impacts and teammate call-outs, notice dead teammates,
   navigate with A*, take cover when hurt or reloading, strafe, fire in bursts, and go to the last known position.
 - Easy / Normal / Hard change enemy count, reaction time, aim error, turn rate, detection rate and hearing.
 
@@ -129,10 +129,14 @@ same behaviour (sliding along walls and furniture, no tunnelling thanks to sub-s
   Spatial attenuation and panning; master / effects / ambience / interface volume.
 
 ### Phase 7 — Testing and polish
-- `npm test` runs 40+ gameplay assertions (`tests/mechanics-test.ts`) and full bot-vs-bot matches on every
+- `npm test` runs 45+ gameplay assertions (`tests/mechanics-test.ts`) and full bot-vs-bot matches on every
   difficulty and side (`tests/sim-test.ts`), plus map connectivity checks for every room and spawn point.
 - Playwright sessions were used to drive the real game: menu panels, deploying, combat, pickups, stealth,
   hostages, scoreboard, pause/resume, results and skill purchase, at 1440×900 and 1366×768.
+
+## Screenshots
+
+See `docs/screenshots/` (captured from the running game).
 
 ## Performance
 
@@ -150,7 +154,7 @@ Settings → Lighting quality → Performance.
 - Characters are procedurally illustrated rotating top-down sprites with procedural animation (continuous
   direction) rather than hand-drawn 8-direction frame sheets. The asset system (`render/textures.ts`) can be
   replaced with image files later.
-- Bots do not pick up weapons, ammo or plates; their reserve ammunition is limited to what they spawn with.
+- Bots only scavenge when completely out of ammunition (nearest weapon or crate); they never pick up armor plates.
 - AI teammates act independently (they sweep the hotel for hostages); there are no squad commands.
 - Hostages cannot be harmed; friendly fire is off.
 - No respawning within a match; one map.
@@ -160,7 +164,7 @@ Settings → Lighting quality → Performance.
 
 1. Measure and tune frame rate on a range of laptop GPUs; consider a WebGL shader light pass if needed.
 2. Replace procedural sprites with commissioned art using the same texture keys.
-3. Bots scavenging weapons/ammo; squad commands for AI teammates.
+3. Smarter bot looting (upgrading weapons, plates); squad commands for AI teammates.
 4. Additional maps (upper-floor variants) and modes.
 5. Online multiplayer (see `NETWORKING.md`).
 6. Gamepad support and key rebinding.

@@ -53,7 +53,7 @@ export const WEAPONS: Record<WeaponId, WeaponDef> = {
     damage: 20, falloffStart: 2000, falloffEnd: 3000, falloffMin: 1, rpm: 300, magazine: 8, reloadTime: 1.5, range: 760,
     recoilKick: 0.11, recoilRecovery: 3.2, spread: 0.022, moveSpread: 0.05, bloomPerShot: 0.03,
     attractRate: 1.05, attractWidth: 46, lockLoss: 0.45, glide: 9,
-    noiseRadius: 850, muzzle: 26, flash: 0.8, shake: 0.0025, sound: 'shot_pistol',
+    noiseRadius: 850, muzzle: 27, flash: 0.8, shake: 0.0025, sound: 'shot_pistol',
     description: 'Issued sidearm. Reliable, but kicks hard and needs five clean hits.',
   },
   mp5: {
@@ -69,7 +69,7 @@ export const WEAPONS: Record<WeaponId, WeaponDef> = {
     damage: 24, falloffStart: 700, falloffEnd: 1300, falloffMin: 0.8, rpm: 700, magazine: 30, reloadTime: 2.6, range: 1250,
     recoilKick: 0.046, recoilRecovery: 5.2, spread: 0.012, moveSpread: 0.07, bloomPerShot: 0.01,
     attractRate: 1.3, attractWidth: 42, lockLoss: 0.18, glide: 10,
-    noiseRadius: 1000, muzzle: 44, flash: 1, shake: 0.0022, sound: 'shot_m4',
+    noiseRadius: 1000, muzzle: 48, flash: 1, shake: 0.0022, sound: 'shot_m4',
     description: '5.56mm carbine. Accurate and controllable across long hotel halls.',
   },
   deagle: {
@@ -77,7 +77,7 @@ export const WEAPONS: Record<WeaponId, WeaponDef> = {
     damage: 55, falloffStart: 900, falloffEnd: 1400, falloffMin: 0.9, rpm: 110, magazine: 7, reloadTime: 2.1, range: 1000,
     recoilKick: 0.24, recoilRecovery: 1.9, spread: 0.014, moveSpread: 0.09, bloomPerShot: 0.05,
     attractRate: 0.85, attractWidth: 38, lockLoss: 0.8, glide: 8,
-    noiseRadius: 1150, muzzle: 30, flash: 1.5, shake: 0.007, sound: 'shot_deagle',
+    noiseRadius: 1150, muzzle: 31, flash: 1.5, shake: 0.007, sound: 'shot_deagle',
     description: '.50 AE hand cannon. Two hits drop a target. Brutal recoil, slow follow-ups.',
   },
 };

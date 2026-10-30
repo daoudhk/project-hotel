@@ -11,7 +11,7 @@ export interface Palette {
   sleeve: string; vest: string; pouch: string; head: string; accent: string; glove: string; skin: string; trim: string;
 }
 export const PALETTES: Record<Faction, Palette> = {
-  AT: { sleeve: '#2e353e', vest: '#3e4855', pouch: '#525c6a', head: '#3f4639', accent: '#6fb2e0', glove: '#1b1d20', skin: '#c79a7e', trim: '#20252c' },
+  AT: { sleeve: '#333a44', vest: '#3e4855', pouch: '#525c6a', head: '#3f4639', accent: '#4d7da3', glove: '#1b1d20', skin: '#c79a7e', trim: '#20252c' },
   GUARD: { sleeve: '#26262b', vest: '#2f2829', pouch: '#3b3334', head: '#141417', accent: '#b8323c', glove: '#121214', skin: '#b58468', trim: '#18171a' },
 };
 const HOSTAGE_SHIRTS = ['#d9d4ca', '#7d8ba3', '#a77653'];
@@ -82,8 +82,8 @@ function drawTorso(ctx: Ctx, p: Palette, faction: Faction) {
   }
   // team accents
   if (faction === 'AT') {
-    rr(ctx, -2.5, 11.4, 4.5, 2.6, 0.6); ctx.fillStyle = p.accent; ctx.fill();
-    rr(ctx, -2.5, -14, 4.5, 2.6, 0.6); ctx.fillStyle = p.accent; ctx.fill();
+    rr(ctx, -1.8, 12.2, 3.4, 1.8, 0.5); ctx.fillStyle = p.accent; ctx.fill();
+    rr(ctx, -1.8, -14, 3.4, 1.8, 0.5); ctx.fillStyle = p.accent; ctx.fill();
   } else {
     ctx.save();
     ellipse(ctx, 0.5, -11.5, 5.6, 4.7); ctx.clip();
@@ -109,7 +109,7 @@ function drawHead(ctx: Ctx, p: Palette, faction: Faction) {
     // NVG mount
     rr(ctx, 5, -1.6, 2.8, 3.2, 0.8); litFill(ctx, '#1d1f22', 5, -1.6, 2.8, 3.2);
     // strobe
-    ellipse(ctx, -4.6, 0, 1.1, 1.1); ctx.fillStyle = '#7fc6ff'; ctx.fill();
+    ellipse(ctx, -4.6, 0, 1, 1); ctx.fillStyle = '#2f4659'; ctx.fill();
   } else {
     ellipse(ctx, 0.3, 0, 6.3, 6.1);
     radialFill(ctx, p.head, 0, 0, 7, 0.22, -0.3);
@@ -131,17 +131,27 @@ function drawArm(ctx: Ctx, x0: number, y0: number, x1: number, y1: number, sleev
   ctx.rotate(a);
   ctx.beginPath();
   ctx.moveTo(0, -w0 / 2);
-  ctx.quadraticCurveTo(len * 0.5, -w0 / 2 - 0.6, len, -w1 / 2);
-  ctx.lineTo(len, w1 / 2);
-  ctx.quadraticCurveTo(len * 0.5, w0 / 2 + 0.6, 0, w0 / 2);
+  ctx.quadraticCurveTo(len * 0.5, -w0 / 2 - 0.4, len, -w1 / 2);
+  ctx.arc(len, 0, w1 / 2, -Math.PI / 2, Math.PI / 2);
+  ctx.quadraticCurveTo(len * 0.5, w0 / 2 + 0.4, 0, w0 / 2);
+  ctx.arc(0, 0, w0 / 2, Math.PI / 2, -Math.PI / 2);
   ctx.closePath();
   const g = ctx.createLinearGradient(0, -w0 / 2, 0, w0 / 2);
-  g.addColorStop(0, shade(sleeve, 0.25)); g.addColorStop(0.5, sleeve); g.addColorStop(1, shade(sleeve, -0.45));
+  g.addColorStop(0, shade(sleeve, 0.14)); g.addColorStop(0.55, sleeve); g.addColorStop(1, shade(sleeve, -0.3));
   ctx.fillStyle = g;
   ctx.fill();
-  // elbow fold
-  ctx.beginPath(); ctx.moveTo(len * 0.5, -w0 / 2 + 0.6); ctx.lineTo(len * 0.55, w0 / 2 - 0.6); stroke(ctx, shade(sleeve, -0.35), 0.4);
   ctx.restore();
+}
+
+/** Two-segment arm from the shoulder to the hand with the elbow bent outward. */
+function limb(ctx: Ctx, sx: number, sy: number, hx: number, hy: number, sleeve: string, side: number) {
+  const mx = (sx + hx) / 2, my = (sy + hy) / 2;
+  const len = Math.hypot(hx - sx, hy - sy);
+  const nx = -(hy - sy) / len, ny = (hx - sx) / len;
+  const bend = Math.max(0, 9 - len * 0.25) * 0.55 + 1.2;
+  const ex = mx + nx * bend * side, ey = my + ny * bend * side;
+  drawArm(ctx, sx, sy, ex, ey, sleeve, 5.4, 4.8);
+  drawArm(ctx, ex, ey, hx, hy, shade(sleeve, 0.04), 4.8, 3.8);
 }
 
 function glove(ctx: Ctx, x: number, y: number, color: string) {
@@ -208,17 +218,16 @@ export function drawWeaponTop(ctx: Ctx, id: WeaponId) {
 }
 
 const RIG = {
-  pistol: { grip: [16, 0], right: [16, 1.6], left: [16.6, -1.6], pose: 'pistol' },
-  deagle: { grip: [15, 0], right: [15, 1.9], left: [15.8, -1.9], pose: 'pistol' },
-  mp5: { grip: [12, 4], right: [12, 4.5], left: [24, 3.6], pose: 'rifle' },
-  m4: { grip: [12, 4], right: [12, 4.6], left: [27, 3.8], pose: 'rifle' },
+  pistol: { grip: [12.5, 0], right: [12.5, 1.7], left: [13.2, -1.7], pose: 'pistol' },
+  deagle: { grip: [12, 0], right: [12, 2], left: [12.8, -2], pose: 'pistol' },
+  mp5: { grip: [9, 4], right: [9, 4.6], left: [19.5, 3.4], pose: 'rifle' },
+  m4: { grip: [9, 4], right: [9, 4.6], left: [21.5, 3.6], pose: 'rifle' },
 } as const;
 
 function drawRig(ctx: Ctx, p: Palette, w: WeaponId) {
   const r = RIG[w];
-  // arms
-  drawArm(ctx, 1, 11, r.right[0] - 1.5, r.right[1] + 0.8, p.sleeve, 5.6, 4.2);
-  drawArm(ctx, 1, -11, r.left[0] - 1.5, r.left[1] - 0.8, p.sleeve, 5.6, 4.2);
+  limb(ctx, 0.5, 10.2, r.right[0] - 1.2, r.right[1] + 0.6, p.sleeve, 1);
+  limb(ctx, 0.5, -10.2, r.left[0] - 1.2, r.left[1] - 0.6, p.sleeve, -1);
   ctx.save();
   ctx.translate(r.grip[0], r.grip[1]);
   drawWeaponTop(ctx, w);
@@ -229,7 +238,7 @@ function drawRig(ctx: Ctx, p: Palette, w: WeaponId) {
 
 /** Muzzle tip relative to body centre for each weapon rig (used for flash/flashlight placement). */
 export const MUZZLE: Record<WeaponId, [number, number]> = {
-  pistol: [30.5, 0], deagle: [34.5, 0], mp5: [37.5, 4], m4: [53, 4],
+  pistol: [27, 0], deagle: [31, 0], mp5: [34.5, 4], m4: [50, 4],
 };
 
 // ------------------------------------------------------------------ hostages
@@ -275,7 +284,7 @@ export function generateTextures(scene: Phaser.Scene) {
     for (const w of ['pistol', 'deagle', 'mp5', 'm4'] as WeaponId[]) add(scene, `rig_${f}_${w}`, sprite(80, 40, 20, 20, (c) => drawRig(c, p, w)));
     // hands at chest (armor plate application / unarmed)
     add(scene, `rig_${f}_plate`, sprite(80, 40, 20, 20, (c) => {
-      drawArm(c, 1, 11, 9, 4, p.sleeve, 5.6, 4.2); drawArm(c, 1, -11, 9, -4, p.sleeve, 5.6, 4.2);
+      limb(c, 0.5, 10.2, 9, 4, p.sleeve, 1); limb(c, 0.5, -10.2, 9, -4, p.sleeve, -1);
       rr(c, 6, -6, 6, 12, 1.5); litFill(c, '#4a4f45', 6, -6, 6, 12, 0.3, -0.4);
       glove(c, 10, 4.5, p.glove); glove(c, 10, -4.5, p.glove);
     }));
