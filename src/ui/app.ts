@@ -62,7 +62,7 @@ export class App {
     this.hud.showBriefing(c.team, DIFFICULTIES[c.difficulty].label);
     this.game.scene.start('game', {
       mode: 'match',
-      config: { playerTeam: c.team, difficulty: c.difficulty, allies: c.allies, seed: Math.floor(Math.random() * 1e9), hostages: 3, timeLimit: 480 },
+      config: { playerTeam: c.team, difficulty: c.difficulty, allies: c.allies, seed: Math.floor(Math.random() * 1e9), hostages: 3, timeLimit: 480, playerName: profile.get().callsign },
     });
   }
 

@@ -143,6 +143,7 @@ export interface MatchConfig {
   hostages: number;
   timeLimit: number;
   attract?: boolean; // menu background: guards only, no match logic
+  playerName?: string;
 }
 
 export interface MatchState {

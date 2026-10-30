@@ -46,7 +46,7 @@ for (const diff of ['easy', 'normal', 'hard'] as const) for (const team of ['AT'
   player.health = 1e9; player.x = 16; player.y = 16; player.flashlight = false; // park the player outside the building: bots play it out
   const t0 = performance.now();
   let steps = 0, shots = 0, deaths = 0, states: Record<string, number> = {};
-  while (w.match.phase !== 'ended' && steps < 60 * 480) {
+  while (w.match.phase !== 'ended' && steps < 60 * 490) {
     w.step(1 / 60, new Map([[player.id, emptyInput()]])); player.x = 16; player.y = 16;
     for (const e of w.drainEvents()) { if (e.type === 'shot') shots++; if (e.type === 'death') deaths++; }
     steps++;

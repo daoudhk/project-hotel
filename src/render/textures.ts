@@ -512,7 +512,7 @@ export function carpetPattern(kind: string): HTMLCanvasElement {
 export function weaponIcon(id: WeaponId, w = 260, h = 100): string {
   const [c, ctx] = canvas(w, h);
   ctx.translate(w / 2, h / 2);
-  const s = { pistol: 2.6, deagle: 2.3, mp5: 1.6, m4: 1.25 }[id];
+  const s = { pistol: 3.5, deagle: 2.95, mp5: 2.25, m4: 1.85 }[id] * Math.min(w / 260, h / 100);
   ctx.scale(s, s);
   ctx.lineJoin = 'round';
   const metal = (x: number, y: number, ww: number, hh: number, col = '#2c2e33') => {

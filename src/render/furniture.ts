@@ -136,7 +136,7 @@ export function drawFurniture(ctx: Ctx, f: Furniture) {
         for (let y = -h / 2; y < h / 2; y += s)
           for (let x = -w / 2; x < w / 2; x += s) {
             const odd = ((x + y) / s) & 1;
-            woodGrain(ctx, x, y, s, s, odd ? '#6e4a2c' : '#5a3b23', x * 3 + y, !!odd);
+            woodGrain(ctx, x, y, s, s, odd ? '#4a3020' : '#3b2618', x * 3 + y, !!odd);
           }
         rr(ctx, -w / 2, -h / 2, w, h, 2); stroke(ctx, 'rgba(200,165,95,0.7)', 2.5);
       });
@@ -308,7 +308,7 @@ export function drawFurniture(ctx: Ctx, f: Furniture) {
         // marble top band
         rr(ctx, -w / 2 + 2, -h / 2 + 2, w - 4, h - 4, 2);
         const g = ctx.createLinearGradient(-w / 2, 0, w / 2, 0);
-        g.addColorStop(0, '#d8d0c2'); g.addColorStop(0.5, '#efe8dc'); g.addColorStop(1, '#c9bfae');
+        g.addColorStop(0, '#a49c8f'); g.addColorStop(0.5, '#b8b0a2'); g.addColorStop(1, '#988f80');
         ctx.fillStyle = g; ctx.fill();
         ctx.strokeStyle = 'rgba(120,100,80,0.35)'; ctx.lineWidth = 0.6;
         ctx.beginPath(); ctx.moveTo(-w / 2 + 8, -h / 4); ctx.bezierCurveTo(-w / 6, h / 3, w / 6, -h / 3, w / 2 - 6, h / 5); ctx.stroke();

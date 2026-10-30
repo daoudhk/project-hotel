@@ -87,7 +87,7 @@ export class World {
 
     // human player
     if (!cfg.attract) {
-      const p = this.createActor('You', playerTeam, false, humanMods);
+      const p = this.createActor(cfg.playerName || 'Operator', playerTeam, false, humanMods);
       p.inv.slots[1] = { def: 'pistol', mag: 5 };
       p.inv.active = 1;
       p.inv.plates = 1;
@@ -389,7 +389,7 @@ export class World {
     // the firing line stops at the first wall, tall object or piece of cover a bullet would hit
     aim.lineEnd = a.isBot ? this.map.raycast(a.x, a.y, aim.angle, def.range, 'opaque') : Math.min(this.map.raycast(a.x, a.y, aim.angle, def.range, 'opaque'), this.map.traceBullet(a.x, a.y, aim.angle, def.range).dist);
     const desired = clamp(input.aimDist, 46, aim.lineEnd);
-    aim.freeDist = lerp(aim.freeDist, desired, approach(def.glide, dt));
+    aim.freeDist = Math.min(aim.lineEnd, lerp(aim.freeDist, desired, approach(def.glide, dt)));
 
     // free crosshair point on the firing line (with recoil deviation)
     const fa = aim.angle + aim.recoil;
@@ -426,6 +426,14 @@ export class World {
       const g = approach(def.glide * 1.15, dt);
       aim.cx = lerp(aim.cx || tx, tx, g);
       aim.cy = lerp(aim.cy || ty, ty, g);
+      // the gliding crosshair may never slide through walls: pull it back to the first obstruction
+      const cdx = aim.cx - a.x, cdy = aim.cy - a.y;
+      const cd = Math.hypot(cdx, cdy);
+      if (cd > 1) {
+        const ca = Math.atan2(cdy, cdx);
+        const hit = this.map.raycast(a.x, a.y, ca, cd, 'opaque');
+        if (hit < cd) { aim.cx = a.x + Math.cos(ca) * Math.max(24, hit - 6); aim.cy = a.y + Math.sin(ca) * Math.max(24, hit - 6); }
+      }
     } else {
       aim.cx = tx;
       aim.cy = ty;

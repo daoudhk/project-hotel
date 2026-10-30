@@ -252,12 +252,14 @@ export class GameScene extends Phaser.Scene {
       const hv = this.hostageViews.get(h.id)!;
       let visible = true;
       if (me && me.alive) visible = w.map.lineClear(me.x, me.y, h.x, h.y) && Math.hypot(me.x - h.x, me.y - h.y) < 900;
+      // to count as found the hostage must actually be seen: close by or lit
+      const perceived = visible && !!me && (Math.hypot(me.x - h.x, me.y - h.y) < 170 || w.lightAt(h.x, h.y) > 0.35);
       const prog = me && me.interactTarget === h.id ? me.interactTimer / 1.6 : 0;
-      if (visible && !hv.discovered && me && h.state === 'captive' && me.team === 'AT') {
+      if (perceived && !hv.discovered && me && h.state === 'captive' && me.team === 'AT') {
         this.hud?.notice(`Hostage located — ${h.room}`, 'info');
         this.audio.ui('objective', 0.6);
       }
-      hv.update(h, dt, visible || h.state === 'following', prog);
+      hv.update(h, dt, visible || h.state === 'following', prog, perceived);
     }
     // pickups
     const live = new Set<number>();
@@ -296,7 +298,7 @@ export class GameScene extends Phaser.Scene {
         lights.push({ kind: 'cone', x: a.x + Math.cos(ang) * 8, y: a.y + Math.sin(ang) * 8, angle: ang, range: FLASH_RANGE, half: FLASH_HALF, intensity: a.isBot ? 0.92 : 1 });
       }
     }
-    if (me && me.alive) lights.push({ kind: 'point', x: me.x, y: me.y, angle: 0, half: Math.PI, range: 75, intensity: me.hidden ? 0.1 : 0.22 });
+    if (me && me.alive) lights.push({ kind: 'point', x: me.x, y: me.y, angle: 0, half: Math.PI, range: 90, intensity: me.hidden ? 0.14 : 0.3 });
     for (let i = this.flashes.length - 1; i >= 0; i--) {
       const f = this.flashes[i];
       f.t -= dt;
@@ -439,6 +441,7 @@ export class GameScene extends Phaser.Scene {
     if (!me) return;
     const won = winner === me.team;
     this.audio.ui(won ? 'mission_complete' : 'mission_fail', 0.9);
+    this.hud?.banner(won, reason);
     const r = profile.recordMatch({
       won, team: me.team, difficulty: this.world.config.difficulty, kills: me.stats.kills, deaths: me.stats.deaths, shots: me.stats.shots, hits: me.stats.hits,
       coinsCollected: me.stats.coins, rescues: me.stats.rescues, ghostRescues: me.stats.ghostRescues, hiddenSeconds: me.stats.hiddenTime,

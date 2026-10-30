@@ -131,12 +131,16 @@ export class MapRenderer {
         if (t === Tile.Floor) continue;
         const x = tx * TILE, y = ty * TILE;
         if (t === Tile.Void) {
-          ctx.fillStyle = '#050507';
+          // solid building mass between and around rooms
+          ctx.fillStyle = '#0d0c10';
           ctx.fillRect(x, y, TILE, TILE);
+          ctx.strokeStyle = 'rgba(255,255,255,0.018)';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(x + 0.5, y + 0.5, TILE - 1, TILE - 1);
           continue;
         }
         const g = ctx.createLinearGradient(x, y, x + TILE, y + TILE);
-        g.addColorStop(0, '#26232b'); g.addColorStop(1, '#1a181e');
+        g.addColorStop(0, '#1d1b21'); g.addColorStop(1, '#141217');
         ctx.fillStyle = g;
         ctx.fillRect(x, y, TILE, TILE);
         // wainscot trim on faces adjacent to floor

@@ -184,8 +184,8 @@ function makeCone() {
       const a = Math.abs(Math.atan2(dy, dx));
       let ang = 1 - smooth(half * 0.55, half + 0.04, a);
       const rad = Math.pow(Math.max(0, 1 - d), 1.35);
-      const hot = Math.exp(-d * 9) * 0.6;
-      let v = Math.min(1.4, rad * ang * 1.25 + hot * ang);
+      const hot = Math.exp(-d * 9) * 0.3;
+      let v = Math.min(1.05, rad * ang * 1.1 + hot * ang);
       // faint lens rings
       v *= 1 - 0.06 * Math.sin(d * 40) * ang;
       const i = (y * CONE_RES + x) * 4;

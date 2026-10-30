@@ -92,7 +92,7 @@ export class Hud {
     const m = w.match;
     if (m.phase === 'briefing') {
       this.brief.classList.remove('hidden');
-    } else if (!this.brief.classList.contains('hidden') && this.brief.style.opacity !== '0') {
+    } else if (m.phase === 'live' && !this.brief.classList.contains('hidden') && this.brief.style.opacity !== '0') {
       this.brief.style.opacity = '0';
       setTimeout(() => this.brief.classList.add('hidden'), 800);
     }
@@ -142,8 +142,8 @@ export class Hud {
     // ---- stealth indicator
     const threat = me.threat;
     let cls = '', label = 'Visible', eye = ICONS.eyeOpen, meter = 0;
-    if (me.hidden) { cls = 'hidden'; label = 'Hidden'; eye = ICONS.eyeClosed; meter = 1; }
-    else if (me.hideTimer > 0) { cls = 'hidden'; label = 'Hiding…'; eye = ICONS.eyeClosed; meter = Math.min(1, me.hideTimer); }
+    if (me.hidden) { cls = 'is-hidden'; label = 'Hidden'; eye = ICONS.eyeClosed; meter = 1; }
+    else if (me.hideTimer > 0) { cls = 'is-hidden'; label = 'Hiding…'; eye = ICONS.eyeClosed; meter = Math.min(1, me.hideTimer); }
     if (threat >= 1) { cls = 'seen'; label = 'Detected'; eye = ICONS.eyeOpen; meter = 1; }
     else if (threat > 0.25) { cls = 'sus'; label = 'Suspicious'; eye = ICONS.eyeOpen; meter = threat; }
     else if (!me.hidden && me.hideTimer <= 0) { label = me.flashlight ? 'Visible · light on' : 'Visible'; meter = 0; }
@@ -245,6 +245,17 @@ export class Hud {
     setTimeout(() => this.detectedEl.classList.remove('show'), 1600);
   }
 
+  /** Large end-of-match banner shown before the results screen. */
+  banner(won: boolean, reason: string) {
+    this.brief.innerHTML = '';
+    this.brief.append(h('div', null,
+      h('div.op', null, 'Operation Night Shift'),
+      h('h2', { style: { color: won ? 'var(--gold-hi)' : '#ff8a7e' } }, won ? 'Mission complete' : 'Mission failed'),
+      h('p', null, reason)));
+    this.brief.style.opacity = '1';
+    this.brief.classList.remove('hidden');
+  }
+
   stealth(hidden: boolean) {
     if (hidden) this.notice('Hidden in the shadows', 'info');
   }
@@ -258,7 +269,7 @@ export class Hud {
         h('div.sb-row.label', null, h('span', null, 'Operator'), h('span', null, 'K'), h('span', null, 'D')));
       for (const m of t.members) {
         const hiddenName = me && t.team !== me.team && m.alive ? m.name : m.name;
-        col.append(h(`div.sb-row${!m.alive ? '.dead' : ''}${m.id === me?.id ? '.me' : ''}`, null, h('span', null, hiddenName + (m.bot ? '' : ' (you)')), h('span', null, String(m.kills)), h('span', null, String(m.deaths))));
+        col.append(h(`div.sb-row${!m.alive ? '.dead' : ''}${m.id === me?.id ? '.me' : ''}`, null, h('span', null, hiddenName + (m.bot ? '' : ' ★')), h('span', null, String(m.kills)), h('span', null, String(m.deaths))));
       }
       box.append(col);
     }

@@ -235,7 +235,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 .plates i.on { background: rgba(111,178,224,0.55); }
 .stealth { margin-top: 12px; display: flex; align-items: center; gap: 10px; font-size: 13px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-faint); transition: color 0.3s; }
 .stealth .eye { width: 26px; height: 16px; }
-.stealth.hidden { color: #8fb6ff; }
+.stealth.is-hidden { color: #8fb6ff; }
 .stealth.seen { color: var(--red); }
 .stealth.sus { color: #f3c25a; }
 .stealth .meter { width: 80px; height: 3px; background: rgba(255,255,255,0.08); position: relative; }

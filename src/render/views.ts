@@ -208,8 +208,8 @@ export class HostageView {
     this.last = { x: h.x, y: h.y };
   }
 
-  update(h: Hostage, dt: number, visible: boolean, rescueProgress: number) {
-    if (visible) this.discovered = true;
+  update(h: Hostage, dt: number, visible: boolean, rescueProgress: number, perceived: boolean) {
+    if (perceived) this.discovered = true;
     const moved = Math.hypot(h.x - this.last.x, h.y - this.last.y);
     this.last = { x: h.x, y: h.y };
     const walking = h.state === 'following';
