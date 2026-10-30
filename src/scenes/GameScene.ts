@@ -268,7 +268,7 @@ export class GameScene extends Phaser.Scene {
       let pv = this.pickupViews.get(p.id);
       if (!pv) { pv = new PickupView(this, p); this.pickupViews.set(p.id, pv); }
       const used = p.kind === 'crate' && !!me && p.taken!.length > 0 && me.inv.slots.every((s) => !s || p.taken!.includes(`${me.id}:${WEAPONS[s.def].caliber}`));
-      pv.update(dt, used);
+      pv.update(dt, used, me && me.alive ? Math.hypot(p.x - me.x, p.y - me.y) : Infinity);
     }
     for (const [id, pv] of this.pickupViews) {
       if (live.has(id)) continue;

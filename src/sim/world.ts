@@ -89,6 +89,7 @@ export class World {
     if (!cfg.attract) {
       const p = this.createActor(cfg.playerName || 'Operator', playerTeam, false, humanMods);
       p.inv.slots[1] = { def: 'pistol', mag: 5 };
+      p.inv.reserve['.45 ACP'] = 8; // one spare magazine
       p.inv.active = 1;
       p.inv.plates = 1;
       if (playerTeam === 'AT') {
@@ -146,7 +147,7 @@ export class World {
     if (cfg.attract) return;
     // pickups
     const wSpots = rng.shuffle([...L.weaponSpots]);
-    const want: Record<string, number> = { mp5: 2, m4: 2, deagle: rng.chance(0.6) ? 2 : 1 };
+    const want: Record<string, number> = { mp5: 4, m4: 4, deagle: 3 };
     for (const s of wSpots) {
       if ((want[s.weapon] ?? 0) <= 0) continue;
       want[s.weapon]--;
@@ -156,11 +157,11 @@ export class World {
       const [x, y] = this.T(s.x, s.y);
       this.addPickup({ kind: 'weapon', x, y, weapon: s.weapon, mag, reserve: total - mag });
     }
-    for (const c of rng.shuffle([...L.crateSpots]).slice(0, 7)) {
+    for (const c of rng.shuffle([...L.crateSpots]).slice(0, 10)) {
       const [x, y] = this.T(c[0], c[1]);
       this.addPickup({ kind: 'crate', x, y, taken: [] });
     }
-    for (const c of rng.shuffle([...L.plateSpots]).slice(0, 5)) {
+    for (const c of rng.shuffle([...L.plateSpots]).slice(0, 7)) {
       const [x, y] = this.T(c[0], c[1]);
       this.addPickup({ kind: 'plate', x, y });
     }

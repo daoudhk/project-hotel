@@ -54,7 +54,7 @@ Other scripts:
 - **The hotel is dark.** Everyone carries a flashlight, and its beam is visible to everyone, you included.
 - **Hide automatically.** Stop in a dark corner next to a wall or furniture and stay still. After about 1.6 seconds
   your flashlight switches off and you crouch into the shadows. Moving, aiming, firing or turning the light on breaks it.
-- **Start light.** You deploy with a pistol holding five rounds. Find weapons, ammo crates (two magazines per
+- **Start light.** You deploy with a pistol holding five rounds plus one spare magazine (three hits drop a guard). Find weapons, ammo crates (two magazines per
   caliber per crate) and armor plates, or take weapons from fallen enemies.
 - **Coins** drop from eliminated enemies (+5 each) and are paid for missions and contracts (+15). Spend them on
   the persistent skill tree.

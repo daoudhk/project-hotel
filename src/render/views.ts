@@ -240,44 +240,88 @@ export class HostageView {
   }
 }
 
+const PICKUP_COLOR: Record<string, number> = { weapon: 0xffcf6e, crate: 0x8fe3a4, plate: 0x8fc8ff, coin: 0xffc34a };
+
+/**
+ * Item lying on the floor. Items are drawn above the darkness (slightly dimmed) with a pulsing
+ * coloured ring so they can be spotted across a dark room, and show a name label when close.
+ */
 export class PickupView {
   readonly img: Phaser.GameObjects.Image;
-  private glint?: Phaser.GameObjects.Image;
+  private glint: Phaser.GameObjects.Image;
+  private ring?: Phaser.GameObjects.Image;
+  private label?: Phaser.GameObjects.Text;
   private t = Math.random() * 10;
+  private baseScale: number;
+  private color: number;
 
   constructor(private scene: Phaser.Scene, readonly p: Pickup) {
     const key = p.kind === 'weapon' ? `wpn_${p.weapon}` : p.kind === 'coin' ? 'pk_coin' : p.kind === 'plate' ? 'pk_plate' : 'pk_crate';
-    this.img = scene.add.image(p.x, p.y, key).setDepth(DEPTH.pickup).setScale(INV).setRotation(p.kind === 'crate' ? 0 : Math.random() * Math.PI * 2);
+    this.color = PICKUP_COLOR[p.kind];
+    this.baseScale = INV * (p.kind === 'weapon' ? 1.3 : p.kind === 'plate' ? 1.2 : 1);
+    this.img = scene.add.image(p.x, p.y, key).setDepth(DEPTH.fxHigh - 1).setScale(0).setTint(0xd9d2c6)
+      .setRotation(p.kind === 'crate' ? 0 : Math.random() * Math.PI * 2);
     if (p.kind === 'weapon') this.img.setOrigin(24 / 66, 0.5);
-    if (p.kind !== 'crate') {
-      this.glint = scene.add.image(p.x, p.y, 'fx_glow').setDepth(DEPTH.fxHigh).setBlendMode(Phaser.BlendModes.ADD)
-        .setTint(p.kind === 'coin' ? 0xffc34a : p.kind === 'plate' ? 0x9ad0ff : 0xffe7b8).setScale(p.kind === 'coin' ? 0.35 : 0.4).setAlpha(0);
+    this.glint = scene.add.image(p.x, p.y, 'fx_glow').setDepth(DEPTH.fxHigh - 1.5).setBlendMode(Phaser.BlendModes.ADD)
+      .setTint(this.color).setScale(p.kind === 'coin' ? 0.35 : p.kind === 'crate' ? 0.75 : 0.6).setAlpha(0);
+    if (p.kind !== 'coin') {
+      this.ring = scene.add.image(p.x, p.y, 'fx_ring').setDepth(DEPTH.fxHigh - 1.6).setBlendMode(Phaser.BlendModes.ADD)
+        .setTint(this.color).setAlpha(0);
     }
-    this.img.setScale(0);
-    scene.tweens.add({ targets: this.img, scale: INV, duration: 220, ease: 'Back.easeOut' });
+    scene.tweens.add({ targets: this.img, scale: this.baseScale, duration: 220, ease: 'Back.easeOut' });
   }
 
-  update(dt: number, usedUp: boolean) {
+  private labelText(usedUp: boolean) {
+    const p = this.p;
+    if (p.kind === 'weapon') return `${WEAPONS[p.weapon!].short} · ${(p.mag ?? 0) + (p.reserve ?? 0)} rds`;
+    if (p.kind === 'crate') return usedUp ? 'Ammo crate · empty' : 'Ammo crate';
+    if (p.kind === 'plate') return 'Armor plate';
+    return '';
+  }
+
+  /** @param playerDist distance from the local player, for the name label */
+  update(dt: number, usedUp: boolean, playerDist = Infinity) {
     this.t += dt;
-    this.img.setPosition(this.p.x, this.p.y);
-    if (this.p.kind === 'coin') {
+    const p = this.p;
+    this.img.setPosition(p.x, p.y);
+    if (p.kind === 'coin') {
       this.img.scaleX = INV * Math.abs(Math.cos(this.t * 3.2));
-      this.img.y = this.p.y - 2 + Math.sin(this.t * 4) * 1.5;
+      this.img.y = p.y - 2 + Math.sin(this.t * 4) * 1.5;
     }
-    if (this.p.kind === 'crate') this.img.setTint(usedUp ? 0x777777 : 0xffffff);
-    if (this.glint) {
-      const pulse = 0.5 + 0.5 * Math.sin(this.t * (this.p.kind === 'coin' ? 5 : 2));
-      this.glint.setPosition(this.p.x, this.p.y).setAlpha((this.p.kind === 'coin' ? 0.45 : 0.12) * (0.4 + pulse * 0.6));
+    if (p.kind === 'crate') this.img.setTint(usedUp ? 0x6a6a6a : 0xd9d2c6);
+    const pulse = 0.5 + 0.5 * Math.sin(this.t * (p.kind === 'coin' ? 5 : 2.4));
+    const dim = usedUp ? 0.25 : 1;
+    this.glint.setPosition(p.x, p.y).setAlpha((p.kind === 'coin' ? 0.45 : 0.28) * (0.5 + pulse * 0.5) * dim);
+    if (this.ring) {
+      const s = (p.kind === 'crate' ? 0.42 : 0.32) * (1 + pulse * 0.12);
+      this.ring.setPosition(p.x, p.y).setScale(s).setAlpha((0.22 + pulse * 0.28) * dim);
     }
+    // name label when the player is close
+    const text = this.labelText(usedUp);
+    const a = text ? 1 - Math.min(1, Math.max(0, (playerDist - 160) / 120)) : 0;
+    if (a > 0.01) {
+      if (!this.label) {
+        this.label = this.scene.add.text(p.x, p.y, text, {
+          fontFamily: '"Barlow Condensed", sans-serif', fontSize: '24px', fontStyle: '600',
+          color: '#' + this.color.toString(16).padStart(6, '0'), stroke: '#0a0a0d', strokeThickness: 5,
+        }).setOrigin(0.5, 1).setDepth(DEPTH.text - 1).setScale(0.5);
+      }
+      if (this.label.text !== text) this.label.setText(text);
+      this.label.setPosition(p.x, p.y - 16).setAlpha(a).setVisible(true);
+    } else this.label?.setVisible(false);
   }
 
   collect(toX: number, toY: number) {
-    this.glint?.destroy();
+    this.glint.destroy();
+    this.ring?.destroy();
+    this.label?.destroy();
     this.scene.tweens.add({ targets: this.img, x: toX, y: toY, scale: 0, alpha: 0, duration: 220, ease: 'Quad.easeIn', onComplete: () => this.img.destroy() });
   }
 
   destroy() {
-    this.glint?.destroy();
+    this.glint.destroy();
+    this.ring?.destroy();
+    this.label?.destroy();
     this.img.destroy();
   }
 }

@@ -105,7 +105,7 @@ export class MainMenu {
       h(`button.team-card${s.team === team ? '.on' : ''}`, { style: { '--c': color } as any, onclick: () => { this.hooks.sound('ui_click'); settings.set({ team }); this.open('deploy'); }, onmouseenter: () => this.hooks.sound('ui_hover') },
         h('div.label', null, team === 'AT' ? 'Assault' : 'Defend'), h('div.tname', null, name), h('p', null, text));
     body.append(h('div.team-cards', null,
-      card('AT', 'Anti-Terrorist', '#6fb2e0', 'Infiltrate the hotel, find the three hostages hidden on the ground floor and escort them to the entrance. You start with a pistol and five rounds.'),
+      card('AT', 'Anti-Terrorist', '#6fb2e0', 'Infiltrate the hotel, find the three hostages hidden on the ground floor and escort them to the entrance. You start with a pistol, five rounds loaded and one spare magazine.'),
       card('GUARD', 'Hostage Guards', '#e37a72', 'Hold the hotel. The strike team will sweep the floor looking for the hostages. Stop every one of them, or run out the clock.')));
     const diff = DIFFICULTIES[s.difficulty];
     body.append(
@@ -152,7 +152,7 @@ export class MainMenu {
     body.append(h('div.divider'), h('div.label', null, 'Equipment'), h('div.equip', null,
       h('div', null, h('div.label', null, 'Always carried'), h('div.en', null, 'Flashlight'), h('p', null, 'Lights a cone ahead of you and reveals the room — and you. Toggle with F. Turns off automatically when you hide.')),
       h('div', null, h('div.label', null, 'Found in the hotel'), h('div.en', null, 'Armor plates'), h('p', null, `Each plate adds 50 armor. Carry ${profile.get().skills['general.carrier'] ? 2 + profile.get().skills['general.carrier'] : 2}. Applying takes about two seconds and blocks firing.`)),
-      h('div', null, h('div.label', null, 'Starting kit'), h('div.en', null, 'P-45 · 5 rounds'), h('p', null, 'Every operator deploys light. Weapons, ammunition crates and plates must be found on the floor.')),
+      h('div', null, h('div.label', null, 'Starting kit'), h('div.en', null, 'P-45 · 5 + 8 rounds'), h('p', null, 'Every operator deploys light. Weapons, ammunition crates and plates must be found on the floor.')),
     ));
     return this.panel('Equipment', 'Loadout', body);
   }

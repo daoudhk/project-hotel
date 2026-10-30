@@ -50,11 +50,11 @@ export interface WeaponDef {
 export const WEAPONS: Record<WeaponId, WeaponDef> = {
   pistol: {
     id: 'pistol', name: 'Standard Pistol', short: 'P-45', slot: 1, caliber: '.45 ACP', automatic: false,
-    damage: 20, falloffStart: 2000, falloffEnd: 3000, falloffMin: 1, rpm: 300, magazine: 8, reloadTime: 1.5, range: 760,
+    damage: 34, falloffStart: 2000, falloffEnd: 3000, falloffMin: 1, rpm: 300, magazine: 8, reloadTime: 1.5, range: 760,
     recoilKick: 0.11, recoilRecovery: 3.2, spread: 0.022, moveSpread: 0.05, bloomPerShot: 0.03,
     attractRate: 1.05, attractWidth: 46, lockLoss: 0.45, glide: 9,
     noiseRadius: 850, muzzle: 27, flash: 0.8, shake: 0.0025, sound: 'shot_pistol',
-    description: 'Issued sidearm. Reliable, but kicks hard and needs five clean hits.',
+    description: 'Issued sidearm. Reliable and punchy — three clean hits drop a guard — but it kicks hard.',
   },
   mp5: {
     id: 'mp5', name: 'MP5', short: 'MP5', slot: 0, caliber: '9mm', automatic: true,

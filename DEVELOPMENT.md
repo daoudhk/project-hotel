@@ -75,7 +75,8 @@ same behaviour (sliding along walls and furniture, no tunnelling thanks to sub-s
 - Walls and cover stop the line and the crosshair; aim attraction ignores enemies that bullets cannot reach.
 - Four weapons with distinct handling (damage, falloff, rate, recoil, recovery, spread, bloom, lock speed/width,
   lock loss, glide, noise radius):
-  - Standard pistol (.45 ACP, semi, 8-round magazine, **5 hits** to kill, spawns with **exactly 5 rounds**)
+  - Standard pistol (.45 ACP, semi, 8-round magazine, **3 hits** to kill, spawns with 5 rounds loaded + 1 spare magazine)
+    (originally 5 hits / 5 rounds total; changed after playtesting because a single miss left you unable to kill anyone)
   - MP5 (9mm, 800 rpm, strong close range with falloff)
   - M4 Carbine (5.56mm, 700 rpm, accurate at range)
   - Desert Eagle (.50 AE, **2 hits** to kill, extreme recoil, slow follow-ups)

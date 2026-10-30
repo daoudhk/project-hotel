@@ -17,11 +17,12 @@ const step = (w: World, sec: number, inp: Partial<InputCommand> | ((t: number) =
 const freezeBots = (w: World) => { for (const [, b] of w.brains) (b as any).update = () => ({ ...emptyInput(), aimAngle: w.actor(b.actorId)!.aim.angle }); };
 
 console.log('Weapons');
-ok(Math.ceil(100 / WEAPONS.pistol.damage) === 5, 'pistol needs 5 hits on a standard enemy');
+ok(Math.ceil(100 / WEAPONS.pistol.damage) === 3, 'pistol needs 3 hits on a standard enemy');
 ok(Math.ceil(100 / WEAPONS.deagle.damage) === 2, 'desert eagle needs 2 hits');
 {
   const w = mk(); const me = w.actors.find((a) => !a.isBot)!;
-  ok(me.inv.slots[1]?.def === 'pistol' && me.inv.slots[1]!.mag === 5 && me.inv.reserve['.45 ACP'] === 0, 'player spawns with pistol holding exactly 5 rounds');
+  ok(me.inv.slots[1]?.def === 'pistol' && me.inv.slots[1]!.mag === 5 && me.inv.reserve['.45 ACP'] === 8, 'player spawns with 5 rounds loaded and one spare magazine');
+  ok(w.pickups.filter((p) => p.kind === 'weapon').length >= 10, `at least 10 weapons on the floor (${w.pickups.filter((p) => p.kind === 'weapon').length})`);
   const wp = w.pickups.filter((p) => p.kind === 'weapon');
   ok(wp.length >= 4 && wp.every((p) => { const t = p.mag! + p.reserve!; return t >= 10 && t <= 30 && p.mag! <= WEAPONS[p.weapon!].magazine; }), `map weapons carry 10-30 rounds within magazine capacity (${wp.map((p) => p.weapon + ':' + p.mag + '+' + p.reserve).join(' ')})`);
 }
@@ -114,9 +115,9 @@ console.log('Ammo crates & reload');
   me.inv.slots[0] = { def: 'm4', mag: 30 };
   me.inv.active = 1;
   step(w, 1 / 60, { interactPressed: true });
-  ok(me.inv.reserve['.45 ACP'] === 16, `crate gives two pistol magazines (${me.inv.reserve['.45 ACP']})`);
+  ok(me.inv.reserve['.45 ACP'] === 24, `crate gives two pistol magazines (${me.inv.reserve['.45 ACP']})`);
   step(w, 1 / 60, { interactPressed: true });
-  ok(me.inv.reserve['.45 ACP'] === 16, 'same caliber cannot be taken twice from one crate');
+  ok(me.inv.reserve['.45 ACP'] === 24, 'same caliber cannot be taken twice from one crate');
   step(w, 1 / 60, { switchSlot: 0 }); step(w, 0.6);
   step(w, 1 / 60, { interactPressed: true });
   ok(me.inv.reserve['5.56mm'] === 60, `sidearm and primary ammo collected separately (5.56: ${me.inv.reserve['5.56mm']})`);
@@ -124,7 +125,7 @@ console.log('Ammo crates & reload');
   step(w, 1 / 60, { reload: true });
   ok(me.reloadTimer > 0, 'reload started');
   step(w, 2);
-  ok(me.inv.slots[1]!.mag === 8 && me.inv.reserve['.45 ACP'] === 13, `reload fills magazine from reserve (${me.inv.slots[1]!.mag}/${me.inv.reserve['.45 ACP']})`);
+  ok(me.inv.slots[1]!.mag === 8 && me.inv.reserve['.45 ACP'] === 21, `reload fills magazine from reserve (${me.inv.slots[1]!.mag}/${me.inv.reserve['.45 ACP']})`);
 }
 
 console.log('Armor plates');
