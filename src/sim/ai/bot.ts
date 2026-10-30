@@ -4,7 +4,7 @@ import { TILE } from '../mapTypes';
 import { Actor, emptyInput, InputCommand } from '../types';
 import type { World } from '../world';
 
-export type BotState = 'patrol' | 'guard' | 'assault' | 'investigate' | 'attack' | 'cover' | 'search' | 'rescue' | 'escort';
+export type BotState = 'patrol' | 'guard' | 'assault' | 'investigate' | 'attack' | 'cover' | 'search' | 'rescue' | 'escort' | 'scavenge';
 type Role = 'patrol' | 'guard' | 'assault';
 
 interface Known { id: number; x: number; y: number; seenAt: number; visible: boolean }
@@ -52,6 +52,8 @@ export class BotBrain {
   private strafe = 1;
   private strafeTimer = 0;
   private rescueHostage = -1;
+  private scavengeId = -1;
+  private lastEngaged = -99;
 
   constructor(readonly actorId: number, private w: World) {}
 
@@ -144,7 +146,7 @@ export class BotBrain {
     if (bestId >= 0 && best >= 1) {
       const o = w.actor(bestId)!;
       if (!this.target || this.target.id !== bestId || !this.target.visible) {
-        const firstContact = this.state !== 'attack';
+        const firstContact = this.state !== 'attack' && this.state !== 'cover' && w.time - this.lastEngaged > 6;
         this.target = { id: o.id, x: o.x, y: o.y, seenAt: w.time, visible: true };
         if (firstContact) {
           this.reaction = w.diff.reaction * (0.8 + w.rng.next() * 0.5);
@@ -153,9 +155,10 @@ export class BotBrain {
           w.noise({ x: me.x, y: me.y, radius: 420, team: me.team, sourceId: me.id, kind: 'shout' });
         }
         this.alertness = 1;
-        this.enter('attack');
+        if (this.state !== 'scavenge') this.enter('attack');
       }
     }
+    if (this.state === 'attack' || this.state === 'cover') this.lastEngaged = w.time;
 
     // hearing
     for (const n of w.noises) {
@@ -281,6 +284,12 @@ export class BotBrain {
       const other = me.inv.slots[me.inv.active === 0 ? 1 : 0];
       if (other && (other.mag > 0 || me.inv.reserve[WEAPONS[other.def].caliber] > 0)) input.switchSlot = me.inv.active === 0 ? 1 : 0;
     }
+    // completely dry: stop shooting and go find a weapon or an ammo crate
+    const dry = me.inv.slots.every((s) => !s || (s.mag === 0 && me.inv.reserve[WEAPONS[s.def].caliber] === 0));
+    if (dry && this.state !== 'scavenge') {
+      const p = this.findSupply();
+      if (p) { this.scavengeId = p; this.enter('scavenge'); }
+    }
     // tactical reload when not engaged
     if (wi && def && this.state !== 'attack' && wi.mag < def.magazine * 0.5 && me.inv.reserve[def.caliber] > 0) input.reload = true;
 
@@ -389,6 +398,22 @@ export class BotBrain {
       case 'attack':
         this.attack(dt, input);
         break;
+      case 'scavenge': {
+        const p = w.pickups.find((x) => x.id === this.scavengeId);
+        const stillDry = me.inv.slots.every((s) => !s || (s.mag === 0 && me.inv.reserve[WEAPONS[s.def].caliber] === 0));
+        if (!p || !stillDry || this.stateTimer > 25) {
+          if (stillDry) { const np = this.findSupply(); if (np && np !== this.scavengeId && this.stateTimer <= 25) { this.scavengeId = np; this.stateTimer = 0; break; } }
+          this.enter(this.target ? 'attack' : this.roleState());
+          break;
+        }
+        if (this.moveTo(p.x, p.y, input, true, dt) || dist(me.x, me.y, p.x, p.y) < 36) {
+          input.moveX = input.moveY = 0;
+          input.interactPressed = true;
+          // a crate serves the equipped caliber: make sure the dry weapon is in hand
+        }
+        if (input.moveX || input.moveY) input.aimAngle = Math.atan2(input.moveY, input.moveX);
+        break;
+      }
       case 'cover': {
         const t = this.target;
         const arrived = this.moveTo(this.cover.x, this.cover.y, input, true, dt);
@@ -404,6 +429,23 @@ export class BotBrain {
     }
     input.aimDist = 200;
     return input;
+  }
+
+  /** Nearest weapon with ammunition, or an ammo crate this bot has not emptied for its caliber. */
+  private findSupply(): number | null {
+    const me = this.me;
+    const wi = me.inv.slots[me.inv.active];
+    const cal = wi ? WEAPONS[wi.def].caliber : null;
+    let best: number | null = null, bestD = 1400;
+    for (const p of this.w.pickups) {
+      let useful = false;
+      if (p.kind === 'weapon') useful = (p.mag ?? 0) + (p.reserve ?? 0) > 0;
+      else if (p.kind === 'crate' && cal) useful = !p.taken!.includes(`${me.id}:${cal}`);
+      if (!useful) continue;
+      const d = dist(me.x, me.y, p.x, p.y);
+      if (d < bestD) { bestD = d; best = p.id; }
+    }
+    return best;
   }
 
   private makeSearch(x: number, y: number) {
@@ -476,6 +518,7 @@ export class BotBrain {
     const ang = Math.atan2(t.y - me.y, t.x - me.x);
     const err = Math.abs(angleDiff(me.aim.angle, ang));
     if (err > 0.16 || !this.w.map.lineClear(me.x, me.y, t.x, t.y)) return;
+    if (wi.mag === 0) return;
     if (this.burstPause > 0) { this.burstPause -= dt; return; }
     if (def.automatic) {
       if (this.burst <= 0) this.burst = this.w.rng.int(this.w.diff.burst[0], this.w.diff.burst[1]);

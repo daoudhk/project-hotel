@@ -211,6 +211,22 @@ console.log('Hostage rescue');
   ok(h.state === 'rescued' && w.match.hostagesRescued === 1, 'hostage escorted to the entrance is rescued');
 }
 
+console.log('Bot scavenging');
+{
+  const w = mk(); w.match.phase = 'live';
+  const me = w.actors.find((a) => !a.isBot)!;
+  me.x = 16; me.y = 16; me.flashlight = false;
+  const g = w.actors.find((a) => a.team === 'GUARD')!;
+  for (const o of w.actors) if (o !== g && o !== me) { o.x = 16; o.y = 16; o.flashlight = false; }
+  for (const s of g.inv.slots) if (s) s.mag = 0;
+  for (const k of Object.keys(g.inv.reserve)) (g.inv.reserve as any)[k] = 0;
+  const near = w.pickups.filter((p) => p.kind === 'weapon').sort((a, b) => Math.hypot(a.x - g.x, a.y - g.y) - Math.hypot(b.x - g.x, b.y - g.y))[0];
+  let shotsDry = 0;
+  for (let i = 0; i < 60 * 30; i++) { w.step(1 / 60, new Map([[me.id, emptyInput()]])); for (const e of w.drainEvents()) if (e.type === 'dryFire' && e.actor === g.id) shotsDry++; if (g.inv.slots.some((s) => s && s.mag > 0)) break; }
+  ok(g.inv.slots.some((s) => s && s.mag > 0), `dry bot scavenged ammunition (nearest weapon was ${Math.round(Math.hypot(near.x - g.x, near.y - g.y))}px away)`);
+  ok(shotsDry === 0, 'dry bot does not keep dry-firing');
+}
+
 console.log('Match rules');
 {
   const w = mk(); w.match.phase = 'live';
