@@ -1,0 +1,25 @@
+{
+  "name": "project-hotel",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Project Hotel - a 2D top-down tactical shooter set in a dark luxury hotel",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "gen:audio": "node scripts/gen-audio.mjs",
+    "test": "node scripts/run-tests.mjs"
+  },
+  "dependencies": {
+    "@fontsource/barlow": "5.1.0",
+    "@fontsource/barlow-condensed": "5.1.0",
+    "@fontsource/cormorant-garamond": "5.1.0",
+    "phaser": "3.88.2"
+  },
+  "devDependencies": {
+    "typescript": "5.6.3",
+    "vite": "5.4.10"
+  }
+}
