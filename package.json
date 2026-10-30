@@ -15,7 +15,9 @@
   "dependencies": {
     "@fontsource/barlow": "5.1.0",
     "@fontsource/barlow-condensed": "5.1.0",
+    "@fontsource/bungee": "^5.1.0",
     "@fontsource/cormorant-garamond": "5.1.0",
+    "@fontsource/rubik": "^5.1.0",
     "phaser": "3.88.2"
   },
   "devDependencies": {

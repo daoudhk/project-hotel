@@ -102,8 +102,8 @@ export class MainMenu {
     const s = settings.get();
     const body = h('div');
     const card = (team: 'AT' | 'GUARD', name: string, color: string, text: string) =>
-      h(`button.team-card${s.team === team ? '.on' : ''}`, { style: { '--c': color } as any, onclick: () => { this.hooks.sound('ui_click'); settings.set({ team }); this.open('deploy'); }, onmouseenter: () => this.hooks.sound('ui_hover') },
-        h('div.label', null, team === 'AT' ? 'Assault' : 'Defend'), h('div.tname', null, name), h('p', null, text));
+      h(`button.team-card.tilt${s.team === team ? '.on' : ''}`, { style: { '--c': color } as any, onclick: () => { this.hooks.sound('ui_click'); settings.set({ team }); this.open('deploy'); }, onmouseenter: () => this.hooks.sound('ui_hover') },
+        h('span.check', null, '✓'), h('div.label', null, team === 'AT' ? 'Assault' : 'Defend'), h('div.tname', null, name), h('p', null, text));
     body.append(h('div.team-cards', null,
       card('AT', 'Anti-Terrorist', '#6fb2e0', 'Infiltrate the hotel, find the three hostages hidden on the ground floor and escort them to the entrance. You start with a pistol, five rounds loaded and one spare magazine.'),
       card('GUARD', 'Hostage Guards', '#e37a72', 'Hold the hotel. The strike team will sweep the floor looking for the hostages. Stop every one of them, or run out the clock.')));
@@ -118,7 +118,7 @@ export class MainMenu {
     );
     body.append(h('div.deploy-foot', null,
       h('div.brief', null, 'The power is out and every guard carries a flashlight. Stand still in a dark corner and you will slip into the shadows automatically.'),
-      h('button.btn.primary', { onclick: () => { this.hooks.sound('ui_click'); this.hooks.deploy({ team: s.team, difficulty: s.difficulty, allies: s.allies }); }, onmouseenter: () => this.hooks.sound('ui_hover') }, 'Begin operation')));
+      h('button.btn.primary.big', { onclick: () => { this.hooks.sound('ui_click'); this.hooks.deploy({ team: s.team, difficulty: s.difficulty, allies: s.allies }); }, onmouseenter: () => this.hooks.sound('ui_hover') }, 'Begin operation')));
     body.append(h('div.divider'), h('div.label', null, 'Controls'), h('div.controls-grid', null, ...CONTROLS.map(([k, d]) => h('div', null, h('span.kbd', null, k), d))));
     return this.panel('Mission setup', 'Deploy', body);
   }
@@ -134,7 +134,7 @@ export class MainMenu {
       const masteryMax = SKILLS.filter((s) => s.weapon === id).reduce((a, s) => a + s.costs.length, 0);
       const stat = (label: string, frac: number, val: string) => h('div.statline', null, h('span', null, label), h('div.bar', null, h('span', { style: { width: `${Math.round(Math.min(1, frac) * 100)}%` } })), h('span.val', null, val));
       const shotsToKill = Math.ceil(100 / d.damage);
-      grid.append(h('div.wcard', null,
+      grid.append(h('div.wcard.tilt', null,
         h('div.wsub', null, `${d.slot === 0 ? 'Primary' : 'Sidearm'} · ${d.caliber} · ${d.automatic ? 'Auto' : 'Semi'}`),
         h('div.wn', null, d.name),
         h('img', { src: this.icons.get(id), alt: d.name }),

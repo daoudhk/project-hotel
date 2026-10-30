@@ -15,7 +15,23 @@
         <div class="boot-mark">H</div>
         <div class="boot-title">PROJECT HOTEL</div>
         <div class="boot-bar"><span id="boot-progress"></span></div>
+        <div class="boot-pct" id="boot-pct">0%</div>
         <div class="boot-status" id="boot-status">Preparing the hotel…</div>
+        <div class="boot-tip" id="boot-tip"></div>
+        <script>
+          (function () {
+            var tips = [
+              '<b>Tip:</b> stand still in a dark corner and you will hide automatically.',
+              '<b>Tip:</b> hold your aim on a target — the crosshair locks on and your shots get accurate.',
+              '<b>Tip:</b> sofas and counters stop bullets. Use them.',
+              '<b>Tip:</b> every guard carries a flashlight. If you can see the beam, they can see yours.',
+              '<b>Tip:</b> glowing rings on the floor mark weapons, ammo and armor.'
+            ];
+            var el = document.getElementById('boot-tip'), i = Math.floor(Math.random() * tips.length);
+            el.innerHTML = tips[i];
+            setInterval(function () { i = (i + 1) % tips.length; el.innerHTML = tips[i]; }, 2600);
+          })();
+        </script>
       </div>
     </div>
     <script type="module" src="/src/main.ts"></script>

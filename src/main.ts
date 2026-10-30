@@ -1,9 +1,10 @@
 import Phaser from 'phaser';
-import '@fontsource/cormorant-garamond/400.css';
-import '@fontsource/cormorant-garamond/400-italic.css';
-import '@fontsource/cormorant-garamond/500.css';
-import '@fontsource/barlow/400.css';
-import '@fontsource/barlow/500.css';
+import '@fontsource/bungee/400.css';
+import '@fontsource/rubik/400.css';
+import '@fontsource/rubik/500.css';
+import '@fontsource/rubik/600.css';
+import '@fontsource/rubik/700.css';
+import '@fontsource/rubik/800.css';
 import '@fontsource/barlow-condensed/400.css';
 import '@fontsource/barlow-condensed/600.css';
 import './styles.css';

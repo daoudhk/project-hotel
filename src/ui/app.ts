@@ -33,6 +33,27 @@ export class App {
     window.addEventListener('keydown', (e) => this.onKey(e, true));
     window.addEventListener('keyup', (e) => this.onKey(e, false));
     window.addEventListener('blur', () => { if (this.mode === 'match' && !this.overlay && !this.scene?.world.match.winner) this.pause(); });
+    // arcade feel: every button pops when pressed, .tilt cards lean towards the cursor
+    this.root.addEventListener('pointerdown', (e) => {
+      const b = (e.target as HTMLElement).closest('button, .row, .stat') as HTMLElement | null;
+      if (!b || b.matches(':disabled')) return;
+      b.classList.remove('pop');
+      void b.offsetWidth;
+      b.classList.add('pop');
+      setTimeout(() => b.classList.remove('pop'), 340);
+    });
+    this.root.addEventListener('mousemove', (e) => {
+      const card = (e.target as HTMLElement).closest('.tilt') as HTMLElement | null;
+      if (!card) return;
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+      card.style.setProperty('--ry', `${x * 10}deg`);
+      card.style.setProperty('--rx', `${-y * 10}deg`);
+    });
+    this.root.addEventListener('mouseout', (e) => {
+      const card = (e.target as HTMLElement).closest('.tilt') as HTMLElement | null;
+      if (card && !card.contains(e.relatedTarget as Node)) { card.style.setProperty('--rx', '0deg'); card.style.setProperty('--ry', '0deg'); }
+    });
     // browsers need a gesture before audio can play
     const unlock = () => { (this.game.sound as any).context?.resume?.(); this.scene?.audio.startAmbience(); };
     window.addEventListener('pointerdown', unlock, { once: false });
