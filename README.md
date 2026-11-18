@@ -60,3 +60,7 @@ Other scripts:
   the persistent skill tree.
 
 See `DEVELOPMENT.md` for the feature status and architecture, and `NETWORKING.md` for the multiplayer plan.
+
+## Gymnasio (athletic training app)
+
+The `gym-app/` folder holds a separate project: a Next.js training and nutrition app. See [`gym-app/README.md`](gym-app/README.md) for setup and architecture.
