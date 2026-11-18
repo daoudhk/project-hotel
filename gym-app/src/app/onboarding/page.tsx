@@ -140,7 +140,7 @@ export default function Onboarding() {
 
   const finish = () => {
     const now = new Date().toISOString();
-    const starting: StartingLift[] = Object.entries(lifts).map(([lift, v]) => ({ lift: lift as BenchmarkLift, weight: v!.w, reps: v!.r, date: now }));
+    const starting: StartingLift[] = Object.entries(lifts).flatMap(([lift, v]) => (v ? [{ lift: lift as BenchmarkLift, weight: v.w, reps: v.r, date: now }] : []));
     if (pullUps !== null) starting.push({ lift: "pull_up", weight: 0, reps: pullUps, date: now });
     const tests: TestResult[] = [];
     if (pullUps !== null) tests.push({ id: uid("t"), test: "pull_up_max", value: pullUps, date: now });
@@ -333,7 +333,14 @@ export default function Onboarding() {
                       <div className="flex items-center justify-between">
                         <div className="text-[15px] font-medium">{l.t}</div>
                         <button
-                          onClick={() => setLifts((s) => ({ ...s, [l.lift]: v ? undefined : { w: l.w, r: l.r } }))}
+                          onClick={() =>
+                            setLifts((s) => {
+                              const n = { ...s };
+                              if (v) delete n[l.lift];
+                              else n[l.lift] = { w: l.w, r: l.r };
+                              return n;
+                            })
+                          }
                           className={cx("text-[14px] font-medium", v ? "text-text-3" : "text-accent")}
                         >
                           {v ? "Remove" : "Add a set"}
